@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ananta‑ION‑CHS Prototype</title>
+  <style>
+    :root{
+      --bg:#0b1020; --text:#eef2ff; --muted:#a8b3da;
+      --line:rgba(255,255,255,.10); --good:#29d392; --bad:#ff5575; --warn:#ffd166;
+      --panel:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:var(--text);background:radial-gradient(1100px 650px at 18% 0%, #182a66 0%, var(--bg) 58%);padding:18px}
+    .wrap{max-width:980px;margin:0 auto}
+
+    header{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:12px}
+    h1{margin:0;font-size:18px}
+    .sub{color:var(--muted);font-size:12px;line-height:1.4;margin-top:6px}
+
+    .grid{display:grid;grid-template-columns:1fr;gap:12px}
+    @media(min-width:980px){.grid{grid-template-columns:1.2fr .8fr}}
+
+    .panel{border:1px solid var(--line);border-radius:14px;padding:14px;background:var(--panel);backdrop-filter: blur(10px)}
+
+    label{display:block;color:var(--muted);font-size:11px;margin:6px 0 3px}
+    input,select{width:100%;padding:5px 7px;border-radius:8px;border:1px solid var(--line);background:rgba(0,0,0,.18);color:var(--text);outline:none;font-size:12px}
+
+    .row{display:grid;grid-template-columns:1fr;gap:8px}
+    @media(min-width:760px){.row{grid-template-columns:repeat(3,1fr)}}
+
+    .btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    button{border:1px solid var(--line);background:rgba(143,180,255,.12);color:var(--text);padding:8px 10px;border-radius:10px;cursor:pointer}
+    button:hover{background:rgba(143,180,255,.18)}
+    .secondary{background:rgba(255,255,255,.06)}
+    .danger{background:rgba(255,85,117,.12)}
+
+    .mini{color:var(--muted);font-size:12px;line-height:1.5}
+    .hr{height:1px;background:var(--line);margin:12px 0}
+
+    pre{background:rgba(0,0,0,.18);border:1px solid var(--line);border-radius:10px;padding:10px;overflow:auto;max-height:680px}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+
+    /* Table */
+    .tableWrap{margin-top:10px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:rgba(0,0,0,.12)}
+    table{border-collapse:collapse;width:100%;table-layout:fixed}
+    th,td{border-bottom:1px solid var(--line);padding:4px 5px;vertical-align:top;font-size:11px;word-wrap:break-word;overflow:hidden}
+    th{position:sticky;top:0;background:rgba(16,26,53,.95);backdrop-filter:blur(6px);text-align:left;font-size:12px;color:var(--muted);font-weight:600}
+    td{font-size:12px}
+    td input, td select{padding:3px 4px;border-radius:6px;font-size:10px;width:100%}
+    .cellTiny{width:72px}
+    .cellWide{width:120px}
+
+    .pill{display:inline-flex;gap:8px;align-items:center;border:1px solid var(--line);background:rgba(0,0,0,.14);padding:7px 10px;border-radius:999px;color:var(--muted);font-size:12px;margin:6px 8px 0 0}
+    .dot{width:10px;height:10px;border-radius:999px;background:var(--muted)}
+    .dot.good{background:var(--good)}
+    .dot.bad{background:var(--bad)}
+    .dot.warn{background:var(--warn)}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Ananta‑ION‑CHS Prototype</h1>
+      <div class="sub">
+        Currency removed. <b>Commodity represents the pricing index</b> (CBOT SB/Corn/Wheat etc). Components are captured in a grid like Endur.
+        <br><span class="mini">Expiry is shared from header “End / Expiry Date”. Quantity is per row.</span>
+      </div>
+    </div>
+    <div class="mini">Prototype link name: ananta-ion-chs-prototype</div>
+  </header>
+
+  <div class="grid">
+    <!-- LEFT: Capture -->
+    <section class="panel">
+      <h3 style="margin:0;font-size:14px">Deal Header</h3>
+
+      <div class="row">
+        <div>
+          <label>Client / Farmer ID</label>
+          <input id="clientId" value="CHS-FARMER-123" />
+        </div>
+        <div>
+          <label>Trader / User</label>
+          <input id="trader" value="pankaj" />
+        </div>
+        <div>
+          <label>Commodity (Pricing Index)</label>
+          <select id="commodity">
+            <option>CBOT Corn</option>
+            <option>CBOT Wheat</option>
+            <option>CBOT Soybeans (SB)</option>
+            <option>CBOT Soymeal</option>
+            <option>CBOT Soyoil</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label>Default Quantity (for new rows)</label>
+          <input id="qty" type="number" step="1" value="5000" />
+        </div>
+        <div>
+          <label>Unit</label>
+          <select id="unit"><option>BU</option><option>MT</option></select>
+        </div>
+        <div>
+          <label>Trade Date</label>
+          <input id="tradeDate" type="date" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label>Start Date</label>
+          <input id="startDate" type="date" />
+        </div>
+        <div>
+          <label>End / Expiry Date (shared)</label>
+          <input id="endDate" type="date" />
+        </div>
+        <div></div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+        <h3 style="margin:0;font-size:14px">Components</h3>
+        <div class="btnrow" style="margin:0">
+          <button id="addRow">+ Add Row</button>
+          <button id="addBarrierPkg" class="secondary">+ Add Barrier Package</button>
+          <button id="clear" class="danger">Clear</button>
+        </div>
+      </div>
+
+      <div class="tableWrap" aria-label="Components table" role="region">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th class="cellWide">Instrument</th>
+              <th class="cellTiny">Side</th>
+              <th class="cellTiny">Opt Type</th>
+              <th class="cellTiny">Style</th>
+              <th class="cellTiny">Strike</th>
+              <th class="cellTiny">Expiry (shared)</th>
+              <th class="cellTiny">Barrier</th>
+              <th class="cellTiny">Dir</th>
+              <th class="cellTiny">Knock</th>
+              <th class="cellTiny">Monitoring</th>
+              <th class="cellTiny">Quantity</th>
+              <th class="cellTiny">Price</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+
+      <div class="hr"></div>
+      <div class="btnrow">
+        <button id="priceBtn">Price</button>
+        <button id="bookBtn" class="secondary">Book</button>
+      </div>
+    </section>
+
+    </div>
+</div>
+
+<script>
+  const $ = id => document.getElementById(id);
+
+  function uid(){ return Math.random().toString(16).slice(2,10).toUpperCase(); }
+  function todayISO(){ const d=new Date(); const p=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`; }
+  function addDaysISO(days){ const d=new Date(); d.setDate(d.getDate()+days); const p=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`; }
+
+  // Instruments displayed in the table. (Extend anytime.)
+  const Instruments = [
+    { key:'VANILLA_OPTION', label:'Vanilla Option' },
+    { key:'BARRIER_OPTION', label:'Barrier Option' },
+    { key:'SWAP', label:'Swap' },
+    { key:'FUTURE', label:'Future' },
+    { key:'PHYSICAL', label:'Physical' }
+  ];
+  const InstOpts = Instruments.map(i=>`<option value="${i.key}">${i.label}</option>`).join('');
+
+  function headerDefaultQty(){
+    const n = Number($('qty').value || 0);
+    return Number.isFinite(n) ? n : 0;
+  }
+
+  function newRow(inst='VANILLA_OPTION'){
+    return {
+      id: uid(),
+      instrumentKey: inst,
+      side: 'BUY',
+      optionType: 'CALL',
+      style: 'EUROPEAN',
+      strike: 4.29,
+      barrierLevel: 4.00,
+      barrierDirection: 'DOWN',
+      barrierKnock: 'OUT',
+      monitoring: 'CONTINUOUS',
+      quantity: headerDefaultQty(),
+      price: ''
+    };
+  }
+
+  // Default example: short call + down&out put
+  let rows = [
+    Object.assign(newRow('VANILLA_OPTION'), { side:'SELL', optionType:'CALL' }),
+    Object.assign(newRow('BARRIER_OPTION'), { side:'BUY', optionType:'PUT' })
+  ];
+
+  function tdInput(r, f, t='text', ex=''){
+    const val = (r[f] ?? '');
+    return `<td><input ${ex} type="${t}" data-id="${r.id}" data-k="${f}" value="${val}"></td>`;
+  }
+  function tdSelect(r, f, opts){
+    const o = opts.map(x=>`<option ${String(r[f])===String(x)?'selected':''}>${x}</option>`).join('');
+    return `<td><select data-id="${r.id}" data-k="${f}">${o}</select></td>`;
+  }
+
+  function expiryCellValue(){
+    return $('endDate').value || '';
+  }
+
+  function render(){
+    const body = $('rows');
+    body.innerHTML = '';
+
+    rows.forEach((r, i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${i+1}</td>
+        <td><select data-id="${r.id}" data-k="instrumentKey">${InstOpts.replace(`value=\"${r.instrumentKey}\"`, `value=\"${r.instrumentKey}\" selected`)}</select></td>
+        ${tdSelect(r,'side',['BUY','SELL'])}
+        ${tdSelect(r,'optionType',['CALL','PUT'])}
+        ${tdSelect(r,'style',['EUROPEAN','AMERICAN'])}
+        ${tdInput(r,'strike','number','step="0.01"')}
+        <td><input type="date" value="${expiryCellValue()}" disabled></td>
+        ${tdInput(r,'barrierLevel','number','step="0.01"')}
+        ${tdSelect(r,'barrierDirection',['DOWN','UP'])}
+        ${tdSelect(r,'barrierKnock',['OUT','IN'])}
+        ${tdSelect(r,'monitoring',['CONTINUOUS','DAILY_CLOSE'])}
+        ${tdInput(r,'quantity','number','step="1"')}
+        ${tdInput(r,'price','number','step="0.0001"')}
+        <td><button data-act="rem" data-id="${r.id}">X</button></td>
+      `;
+      body.appendChild(tr);
+    });
+
+    wire();
+    
+  }
+
+  function wire(){
+    document.querySelectorAll('[data-act="rem"]').forEach(b => {
+      b.onclick = () => {
+        rows = rows.filter(x => x.id !== b.dataset.id);
+        if(rows.length === 0) rows = [ newRow() ];
+        render();
+      };
+    });
+
+    document.querySelectorAll('[data-id][data-k]').forEach(el => {
+      el.onchange = () => {
+        const r = rows.find(x => x.id === el.dataset.id);
+        if(!r) return;
+        const k = el.dataset.k;
+        let v = el.value;
+
+        if(['strike','barrierLevel','price','quantity'].includes(k)){
+          v = (v==='' ? '' : Number(v));
+        }
+
+        r[k] = v;
+        
+      };
+    });
+  }
+
+        return { payload, issues };
+  }
+
+  // Mock actions (wire to your middleware)
+  $('priceBtn').onclick = () => {
+    alert('Pricing call would go to /price with current screen state.');
+  };
+
+  $('bookBtn').onclick = () => {
+    alert('Booking call would go to /book with current screen state.');
+  };
+
+  $('addRow').onclick = () => { rows.push(newRow()); render(); };
+
+  $('addBarrierPkg').onclick = () => {
+    rows.push(
+      Object.assign(newRow('VANILLA_OPTION'), { side:'SELL', optionType:'CALL' }),
+      Object.assign(newRow('BARRIER_OPTION'), { side:'BUY', optionType:'PUT' })
+    );
+    render();
+  };
+
+  $('clear').onclick = () => { rows = [ newRow() ]; render(); };
+
+  // Keep shared expiry cells updated
+  $('endDate').addEventListener('change', render);
+
+  // Init dates
+  $('tradeDate').value = todayISO();
+  $('startDate').value = todayISO();
+  $('endDate').value = addDaysISO(60);
+
+  render();
+</script>
+</body>
+</html>
